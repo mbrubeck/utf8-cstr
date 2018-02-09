@@ -9,6 +9,7 @@ use std::mem::transmute;
 use std::os::raw::c_char;
 use std::ops::Deref;
 use std::fmt;
+use std::slice;
 
 
 #[derive(Debug)]
@@ -53,7 +54,7 @@ impl Utf8CStr {
     ///  - `v` must be utf-8 encoded (for use in `&str`)
     ///  - `l` must be the length of `v` including the nul terminator
     pub unsafe fn from_raw_parts<'a>(v: *const c_char, l: usize) -> &'a Self {
-        transmute((v, l))
+        transmute(CStr::from_bytes_with_nul_unchecked(slice::from_raw_parts(v as *const u8, l)))
     }
 
     /// Construct a `Utf8CStr` with minimal checking.
